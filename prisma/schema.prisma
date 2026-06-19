@@ -1,0 +1,212 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+model Organization {
+  id           String       @id @default(uuid())
+  companyName  String
+  trn          String       @unique @db.VarChar(15)
+  jurisdiction Jurisdiction
+  vatPercentage Decimal      @default(5.0)
+  createdAt    DateTime     @default(now())
+  users        User[]
+  customers    Customer[]
+  invoices     Invoice[]
+  quotations   Quotation[]
+  products     Product[]
+  expenses     Expense[]
+  leads        Lead[]
+  vendors      Vendor[]
+  accounts     Account[]
+}
+
+enum Jurisdiction {
+  ONSHORE
+  FREE_ZONE
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  passwordHash   String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Customer {
+  id             String       @id @default(uuid())
+  name           String
+  phone          String
+  email          String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  invoices       Invoice[]
+  quotations     Quotation[]
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  invoiceNumber  String        @unique
+  amount         Decimal
+  vatAmount      Decimal
+  totalAmount    Decimal
+  status         InvoiceStatus
+  dueDate        DateTime
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  customerId     String?
+  customer       Customer?     @relation(fields: [customerId], references: [id])
+  dunningLogs    DunningLog[]
+  items          InvoiceItem[]
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+}
+
+model DunningLog {
+  id             String           @id @default(uuid())
+  invoiceId      String
+  invoice        Invoice          @relation(fields: [invoiceId], references: [id])
+  recipientPhone String
+  status         DunningLogStatus
+  messageSid     String           @unique
+  retryCount     Int              @default(0)
+  lastAttempted  DateTime?
+  createdAt      DateTime         @default(now())
+}
+
+enum DunningLogStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model Product {
+  id             String        @id @default(uuid())
+  name           String
+  sku            String        @unique
+  price          Decimal
+  stockQuantity  Int           @default(0)
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  invoiceItems   InvoiceItem[]
+  quotationItems QuotationItem[]
+}
+
+model InvoiceItem {
+  id        String  @id @default(uuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  unitPrice Decimal
+}
+
+model Expense {
+  id             String       @id @default(uuid())
+  amount         Decimal
+  description    String
+  category       String?
+  date           DateTime     @default(now())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Lead {
+  id             String       @id @default(uuid())
+  name           String
+  email          String?
+  phone          String?
+  status         String       @default("NEW") // NEW, CONTACTED, QUALIFIED, LOST
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Quotation {
+  id             String           @id @default(uuid())
+  quotationNumber String          @unique
+  amount         Decimal
+  vatAmount      Decimal
+  totalAmount    Decimal
+  status         QuotationStatus  @default(DRAFT)
+  issueDate      DateTime         @default(now())
+  validUntil     DateTime?
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  customerId     String?
+  customer       Customer?        @relation(fields: [customerId], references: [id])
+  items          QuotationItem[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+model QuotationItem {
+  id          String    @id @default(uuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id])
+  description String?
+  quantity    Int
+  unitPrice   Decimal
+}
+
+model Vendor {
+  id             String       @id @default(uuid())
+  name           String
+  company        String?
+  email          String?
+  phone          String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Account {
+  id             String       @id @default(uuid())
+  code           String
+  name           String
+  type           AccountType
+  description    String?
+  parentAccountId String?
+  parentAccount  Account?     @relation("AccountHierarchy", fields: [parentAccountId], references: [id])
+  subAccounts    Account[]    @relation("AccountHierarchy")
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([organizationId, code])
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}

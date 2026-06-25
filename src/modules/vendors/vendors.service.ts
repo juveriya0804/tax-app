@@ -43,3 +43,29 @@ export const deleteVendor = async (organizationId: string, vendorId: string) => 
     },
   });
 };
+
+export const getVendorLeads = async (organizationId: string) => {
+  return prisma.vendorLead.findMany({
+    where: { organizationId },
+    orderBy: { createdAt: 'desc' },
+  });
+};
+
+export const createVendorLead = async (organizationId: string, data: any) => {
+  return prisma.vendorLead.create({
+    data: {
+      ...data,
+      organizationId,
+    },
+  });
+};
+
+export const updateVendorLead = async (organizationId: string, leadId: string, data: any) => {
+  return prisma.vendorLead.updateMany({
+    where: {
+      id: leadId,
+      organizationId,
+    },
+    data,
+  });
+};

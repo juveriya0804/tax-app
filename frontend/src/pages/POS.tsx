@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { fetchApi } from '../services/api';
 import toast from 'react-hot-toast';
+import { Plus } from 'lucide-react';
+import CustomerModal from '../components/CustomerModal';
 
 export default function POS() {
   const [products, setProducts] = useState<any[]>([]);
@@ -8,6 +10,7 @@ export default function POS() {
   const [cart, setCart] = useState<{ product: any; quantity: number }[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<string>('');
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   
   useEffect(() => {
     loadProducts();
@@ -160,17 +163,36 @@ export default function POS() {
       <div className="glass-panel" style={{ width: '380px', display: 'flex', flexDirection: 'column', padding: '0', overflow: 'hidden' }}>
         <div style={{ padding: '24px', borderBottom: '1px solid rgba(0,0,0,0.05)', background: 'rgba(255,255,255,0.5)' }}>
           <h2 style={{ fontSize: '1.25rem', marginBottom: '16px' }}>Current Order</h2>
-          <select 
-            className="form-input" 
-            value={selectedCustomer} 
-            onChange={(e) => setSelectedCustomer(e.target.value)}
-            style={{ width: '100%' }}
-          >
-            <option value="">Walk-in Customer (No Account)</option>
-            {customers.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <select 
+              className="form-input" 
+              value={selectedCustomer} 
+              onChange={(e) => setSelectedCustomer(e.target.value)}
+              style={{ flex: 1 }}
+            >
+              <option value="">Walk-in Customer (No Account)</option>
+              {customers.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            <button 
+              onClick={() => setIsCustomerModalOpen(true)}
+              style={{
+                background: 'var(--accent-primary)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                width: '42px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+              }}
+              title="Add New Customer"
+            >
+              <Plus size={20} />
+            </button>
+          </div>
         </div>
         
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
@@ -224,6 +246,18 @@ export default function POS() {
           </button>
         </div>
       </div>
+
+      <CustomerModal 
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        onSaved={(newCustomer) => {
+          setIsCustomerModalOpen(false);
+          if (newCustomer) {
+            setCustomers(prev => [...prev, newCustomer]);
+            setSelectedCustomer(newCustomer.id);
+          }
+        }}
+      />
     </div>
   );
 }

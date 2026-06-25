@@ -22,6 +22,9 @@ model Organization {
   expenses     Expense[]
   leads        Lead[]
   vendors      Vendor[]
+  vendorLeads  VendorLead[]
+  deliveryChallans DeliveryChallan[]
+  creditNotes  CreditNote[]
   accounts     Account[]
 }
 
@@ -48,6 +51,8 @@ model Customer {
   createdAt      DateTime     @default(now())
   invoices       Invoice[]
   quotations     Quotation[]
+  deliveryChallans DeliveryChallan[]
+  creditNotes  CreditNote[]
 }
 
 model Invoice {
@@ -101,6 +106,8 @@ model Product {
   organization   Organization  @relation(fields: [organizationId], references: [id])
   invoiceItems   InvoiceItem[]
   quotationItems QuotationItem[]
+  deliveryChallanItems DeliveryChallanItem[]
+  creditNoteItems CreditNoteItem[]
 }
 
 model InvoiceItem {
@@ -209,4 +216,88 @@ enum AccountType {
   EQUITY
   REVENUE
   EXPENSE
+}
+
+model VendorLead {
+  id              String       @id @default(uuid())
+  name            String
+  phone           String?
+  email           String?
+  country         String?
+  workflowName    String       @default("Vendor Onboarding")
+  currentAssignee String       @default("Unassigned")
+  currentStage    String       @default("New")
+  currentStatus   String       @default("Active")
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model DeliveryChallan {
+  id                   String                 @id @default(uuid())
+  challanNumber        String                 @unique
+  status               DeliveryChallanStatus  @default(DRAFT)
+  issueDate            DateTime               @default(now())
+  expectedDeliveryDate DateTime?
+  organizationId       String
+  organization         Organization           @relation(fields: [organizationId], references: [id])
+  customerId           String?
+  customer             Customer?              @relation(fields: [customerId], references: [id])
+  items                DeliveryChallanItem[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+}
+
+enum DeliveryChallanStatus {
+  DRAFT
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model DeliveryChallanItem {
+  id          String           @id @default(uuid())
+  challanId   String
+  challan     DeliveryChallan  @relation(fields: [challanId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?         @relation(fields: [productId], references: [id])
+  description String?
+  quantity    Int
+  unitPrice   Decimal
+}
+
+model CreditNote {
+  id               String            @id @default(uuid())
+  creditNoteNumber String            @unique
+  status           CreditNoteStatus  @default(DRAFT)
+  issueDate        DateTime          @default(now())
+  amount           Decimal
+  vatAmount        Decimal           @default(0)
+  totalAmount      Decimal
+  organizationId   String
+  organization     Organization      @relation(fields: [organizationId], references: [id])
+  customerId       String?
+  customer         Customer?         @relation(fields: [customerId], references: [id])
+  items            CreditNoteItem[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+enum CreditNoteStatus {
+  DRAFT
+  ISSUED
+  APPLIED
+  CANCELLED
+}
+
+model CreditNoteItem {
+  id            String      @id @default(uuid())
+  creditNoteId  String
+  creditNote    CreditNote  @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product?    @relation(fields: [productId], references: [id])
+  description   String?
+  quantity      Int
+  unitPrice     Decimal
 }

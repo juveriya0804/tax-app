@@ -78,7 +78,10 @@ export default function Reports() {
               <Tooltip 
                 contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', color: 'var(--text-primary)' }}
                 itemStyle={{ color: 'var(--success)' }}
-                formatter={(value: number) => [`₹${value.toFixed(2)}`, 'Revenue']}
+                formatter={(value: any) => {
+                  const num = Number(value);
+                  return isNaN(num) ? ['₹0.00', 'Revenue'] : [`₹${num.toFixed(2)}`, 'Revenue'];
+                }}
               />
               <Area type="monotone" dataKey="revenue" stroke="var(--success)" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
             </AreaChart>
@@ -112,7 +115,10 @@ export default function Reports() {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', border: 'none', borderRadius: '8px' }}
-                  formatter={(value: number) => `₹${value.toFixed(2)}`}
+                  formatter={(value: any) => {
+                    const num = Number(value);
+                    return isNaN(num) ? '₹0.00' : `₹${num.toFixed(2)}`;
+                  }}
                 />
                 <Legend verticalAlign="bottom" height={36} />
               </PieChart>

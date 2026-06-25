@@ -11,7 +11,6 @@ import {
   Package,
   Store,
   Settings,
-  LogOut,
   Workflow,
   Landmark,
   ClipboardList,
@@ -20,6 +19,13 @@ import {
   Award,
   Briefcase,
   Rocket,
+  Menu,
+  Zap,
+  Gift,
+  Bot,
+  Headphones,
+  Bell,
+  Triangle,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
@@ -27,14 +33,17 @@ import {
 export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [expandedNav, setExpandedNav] = useState<string[]>(['/invoices']);
+  const [expandedNav, setExpandedNav] = useState<string[]>([]);
+  const [isSidebarPinned, setIsSidebarPinned] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     removeAuthToken();
     navigate('/login');
   };
 
-  const toggleNav = (path: string) => {
+  const toggleNav = (path: string, e: React.MouseEvent) => {
+    e.preventDefault();
     setExpandedNav(prev => 
       prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path]
     );
@@ -44,7 +53,7 @@ export default function Layout() {
     { path: '/dashboard', label: 'Dashboard', icon: Gauge },
     { path: '/customers', label: 'Contacts', icon: User, badge: 'New' },
     { 
-      path: '/invoices', 
+      path: '/invoices-menu', 
       label: 'Sales & Invoices', 
       icon: ReceiptText,
       subLinks: [
@@ -59,12 +68,12 @@ export default function Layout() {
       ]
     },
     { 
-      path: '/purchases', 
+      path: '/purchases-menu', 
       label: 'Purchases & Expenses', 
       icon: ShoppingCart,
       subLinks: [
         { path: '/vendor-leads', label: 'Vendor Leads' },
-        { path: '/vendors', label: 'Vendors & Suppliers' },
+        { path: '/vendors-suppliers', label: 'Vendors & Suppliers' },
         { path: '/purchases', label: 'Purchases & Expenses' },
         { path: '/payout-receipts', label: 'Payout Receipts' },
         { path: '/purchase-orders', label: 'Purchase Orders' },
@@ -73,7 +82,7 @@ export default function Layout() {
       ]
     },
     { 
-      path: '/accounting', 
+      path: '/accounting-menu', 
       label: 'Accounting', 
       icon: BookOpen,
       subLinks: [
@@ -84,171 +93,270 @@ export default function Layout() {
         { path: '/trial-balance', label: 'Trial Balance' },
         { path: '/profit-loss', label: 'Profit & Loss' },
         { path: '/income-statement', label: 'Income Statement' },
-        { path: '/all-ledgers', label: 'All Ledgers Master R...', badge: 'New' },
+        { path: '/all-ledgers', label: 'All Ledgers', badge: 'New' },
         { path: '/day-book', label: 'Day Book' }
       ]
     },
-    { path: '/crm', label: 'Sales CRM & Leads', icon: MonitorCheck },
+    { 
+      path: '/crm-menu', 
+      label: 'Sales CRM & Leads', 
+      icon: MonitorCheck,
+      subLinks: [
+        { path: '/all-pipelines', label: 'All Pipelines' },
+        { path: '/forms', label: 'Forms' },
+        { path: '/all-leads', label: 'All Leads' },
+        { path: '/all-meetings', label: 'All Meetings' },
+        { path: '/leads-summary', label: 'Leads Summary' },
+        { path: '/team-sales-report', label: 'Team Sales Report' },
+        { path: '/client-performance-report', label: 'Client Performance Report' },
+        { path: '/lead-source-report', label: 'Lead Source Report' }
+      ]
+    },
     { path: '/inventory', label: 'Products & Inventory', icon: Package },
-    { path: '#workflows', label: 'Workflows & Automations', icon: Workflow },
-    { path: '#banking', label: 'Banking & Payments', icon: Landmark },
-    { path: '#payroll', label: 'Payroll & HRMS', icon: ClipboardList },
-    { path: '#team', label: 'Manage Team', icon: Users, badge: 'New' },
-    { path: '#settings', label: 'Business Settings', icon: Settings },
-    { path: '#integrations', label: 'Integrations', icon: Plug },
-    { path: '#greetings', label: 'Greetings', icon: Award },
-    { path: '/vat-profile', label: 'Profile', icon: Briefcase, badge: 'New' },
-    { path: '#growth', label: 'Growth Suite', icon: Rocket },
     { path: '/pos', label: 'Point of Sale', icon: Store },
+    { 
+      path: '/banking-menu', 
+      label: 'Banking & Payments', 
+      icon: Landmark,
+      subLinks: [
+        { path: '/payment-accounts', label: 'Payment Accounts' },
+        { path: '/bank-accounts', label: 'Bank Accounts' },
+        { path: '/employee-accounts', label: 'Employee Accounts' },
+        { path: '/bank-reconciliation', label: 'Bank Reconciliation' }
+      ]
+    },
+    { 
+      path: '/team-menu', 
+      label: 'Manage Team', 
+      icon: Users, 
+      badge: 'New',
+      subLinks: [
+        { path: '/manage-users', label: 'Manage Users' },
+        { path: '/manage-team-roles', label: 'Manage Team Roles' }
+      ]
+    },
+    { 
+      path: '/settings-menu', 
+      label: 'Business Settings', 
+      icon: Settings,
+      subLinks: [
+        { path: '/settings/general', label: 'General Settings' },
+        { path: '/settings/users', label: 'All Users' },
+        { path: '/settings/roles', label: 'Roles & Permissions' },
+        { path: '/settings/accounting', label: 'Accounting' }
+      ]
+    },
+    { path: '/vat-profile', label: 'VAT Profile', icon: Briefcase, badge: 'New' },
+    { path: '/growth', label: 'Growth Suite', icon: Rocket },
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw' }}>
-      {/* Sidebar */}
-      <div className="glass-panel" style={{ 
-        width: '280px', 
-        padding: '30px 16px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        borderRight: '1px solid rgba(0, 0, 0, 0.05)',
-        borderRadius: 0,
-        margin: 0,
-        background: '#ffffff'
-      }}>
-        <h2 className="text-gradient" style={{ marginBottom: '32px', fontSize: '1.5rem', textAlign: 'center' }}>Tax Flow</h2>
-        
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {navLinks.map((link) => {
-            const isActive = location.pathname === link.path || (link.subLinks && link.subLinks.some(sub => location.pathname === sub.path));
-            const isExpanded = expandedNav.includes(link.path);
-            const Icon = link.icon;
+    <div>
+      {/* Top Navigation */}
+      <div className="top-nav">
+        <div className="nav-left">
+          <button className="nav-icon-btn" onClick={() => setIsSidebarPinned(!isSidebarPinned)}>
+            <Menu size={24} />
+          </button>
+          <div className="nav-brand">
+            <Triangle size={24} fill="white" />
+            Refrens
+          </div>
+          <Link to="/user-profile/edit" style={{
+            background: 'rgba(255, 255, 255, 0.15)',
+            padding: '4px 12px',
+            borderRadius: '100px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.85rem',
+            marginLeft: '16px',
+            color: 'white',
+            textDecoration: 'none',
+            cursor: 'pointer'
+          }}>
+            <img 
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Samir" 
+              alt="Profile" 
+              style={{ width: '20px', height: '20px', borderRadius: '50%' }}
+            />
+            Meet Samir Lalani
+            <span style={{ opacity: 0.8, fontSize: '0.75rem' }}>Your Onboarding manager</span>
+          </Link>
+        </div>
+        <div className="nav-right">
+          <button className="nav-icon-btn" style={{ position: 'relative' }}>
+            <Bell size={20} />
+            <span style={{
+              position: 'absolute',
+              top: '0px',
+              right: '2px',
+              background: '#ef4444',
+              color: 'white',
+              fontSize: '0.6rem',
+              width: '14px',
+              height: '14px',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>2</span>
+          </button>
+          <div style={{ position: 'relative' }}>
+            <button 
+              onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                cursor: 'pointer',
+                marginLeft: '8px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <img 
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" 
+                alt="User" 
+                style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)' }}
+              />
+            </button>
             
-            return (
-              <div key={link.path + link.label}>
-                {link.subLinks ? (
-                  <div
-                    onClick={() => toggleNav(link.path)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      borderRadius: '12px',
-                      cursor: 'pointer',
-                      color: isActive ? '#ffffff' : '#334155',
-                      background: isActive ? 'var(--accent-primary)' : 'transparent',
-                      transition: 'all 0.3s ease',
-                      fontWeight: isActive ? 600 : 500,
-                      fontSize: '1.05rem'
-                    }}
-                  >
-                    <Icon size={22} style={{ marginRight: '16px', opacity: isActive ? 1 : 0.8 }} />
-                    <span style={{ flex: 1 }}>{link.label}</span>
-                    {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </div>
-                ) : (
-                  <Link
-                    to={link.path}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      borderRadius: '12px',
-                      textDecoration: 'none',
-                      color: isActive ? '#ffffff' : '#334155',
-                      background: isActive ? 'var(--accent-primary)' : 'transparent',
-                      border: 'none',
-                      transition: 'all 0.3s ease',
-                      fontWeight: isActive ? 600 : 500,
-                      fontSize: '1.05rem'
-                    }}
-                  >
-                    <Icon size={22} style={{ marginRight: '16px', opacity: isActive ? 1 : 0.8 }} />
-                    <span style={{ flex: 1 }}>{link.label}</span>
-                    {link.badge && (
-                      <span style={{
-                        color: '#E11D48',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        marginLeft: '8px'
-                      }}>
-                        {link.badge}
-                      </span>
-                    )}
-                  </Link>
-                )}
+            {isProfileMenuOpen && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: '0',
+                marginTop: '8px',
+                background: 'white',
+                borderRadius: '8px',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                width: '180px',
+                overflow: 'hidden',
+                zIndex: 100,
+                display: 'flex',
+                flexDirection: 'column',
+                border: '1px solid rgba(0,0,0,0.05)'
+              }}>
+                <Link 
+                  to="/user-profile/view" 
+                  onClick={() => setIsProfileMenuOpen(false)}
+                  style={{ padding: '12px 16px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.9rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}
+                >
+                  View Profile
+                </Link>
+                <Link 
+                  to="/user-profile/edit" 
+                  onClick={() => setIsProfileMenuOpen(false)}
+                  style={{ padding: '12px 16px', color: 'var(--text-primary)', textDecoration: 'none', fontSize: '0.9rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}
+                >
+                  Edit Profile
+                </Link>
+                <button 
+                  onClick={handleLogout}
+                  style={{ 
+                    padding: '12px 16px', 
+                    color: 'var(--danger)', 
+                    background: 'none', 
+                    border: 'none', 
+                    textAlign: 'left',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  Log Out
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-                {link.subLinks && isExpanded && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px', marginLeft: '38px' }}>
-                    {link.subLinks.map(subLink => {
-                      const isSubActive = location.pathname === subLink.path;
-                      return (
-                        <Link
-                          key={subLink.path}
-                          to={subLink.path}
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            textDecoration: 'none',
-                            color: isSubActive ? 'var(--accent-primary)' : '#475569',
-                            background: isSubActive ? '#f8fafc' : 'transparent',
-                            fontWeight: isSubActive ? 600 : 500,
-                            fontSize: '0.95rem',
-                            transition: 'all 0.2s ease'
-                          }}
-                        >
-                          <span>{subLink.label}</span>
-                          {subLink.badge && (
-                            <span style={{
-                              color: '#E11D48',
-                              fontSize: '0.75rem',
-                              fontWeight: 600,
-                              background: '#ffe4e6',
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                            }}>
-                              {subLink.badge}
-                            </span>
-                          )}
-                        </Link>
-                      );
-                    })}
+      {/* Sidebar */}
+      <div className={`refrens-sidebar ${isSidebarPinned ? 'pinned' : ''}`}>
+        <Link to="/" style={{ marginBottom: '16px', alignSelf: 'flex-start', marginLeft: '12px' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '2px solid var(--accent-main)',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--accent-main)',
+            fontWeight: 'bold',
+            fontSize: '1.2rem'
+          }}>
+            N
+          </div>
+        </Link>
+        <div className="refrens-sidebar-content">
+          {navLinks.map((link) => {
+            const hasSubLinks = !!link.subLinks;
+            const isSubMenuExpanded = expandedNav.includes(link.path);
+            
+            // Check if active
+            let isActive = false;
+            if (hasSubLinks) {
+              isActive = link.subLinks!.some(sub => location.pathname === sub.path);
+            } else {
+              isActive = location.pathname === link.path;
+            }
+
+            const Icon = link.icon;
+            return (
+              <div key={link.path} className="sidebar-item">
+                <Link
+                  to={hasSubLinks ? '#' : link.path}
+                  onClick={(e) => {
+                    if (hasSubLinks) {
+                      toggleNav(link.path, e);
+                    }
+                  }}
+                  className={`sidebar-icon ${isActive ? 'active' : ''}`}
+                  title={link.label}
+                >
+                  <div className="sidebar-icon-inner">
+                    <Icon size={20} />
+                  </div>
+                  <div className="sidebar-label">
+                    <span>{link.label}</span>
+                    {hasSubLinks && (
+                      isSubMenuExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                    )}
+                  </div>
+                </Link>
+
+                {hasSubLinks && (
+                  <div className={`sidebar-submenus ${isSubMenuExpanded ? 'expanded' : ''}`}>
+                    {link.subLinks!.map(sub => (
+                      <Link 
+                        key={sub.path} 
+                        to={sub.path}
+                        className={`sidebar-sublink ${location.pathname === sub.path ? 'active' : ''}`}
+                      >
+                        {sub.label}
+                      </Link>
+                    ))}
                   </div>
                 )}
               </div>
             );
           })}
-        </nav>
-
-        <button 
-          onClick={handleLogout} 
-          style={{ 
-            marginTop: 'auto', 
-            display: 'flex', 
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '12px',
-            background: 'transparent',
-            border: 'none',
-            color: '#64748B',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'color 0.2s ease'
-          }}
-          onMouseOver={(e) => e.currentTarget.style.color = '#0F172A'}
-          onMouseOut={(e) => e.currentTarget.style.color = '#64748B'}
-        >
-          <LogOut size={20} style={{ marginRight: '8px' }} />
-          Logout
-        </button>
+        </div>
       </div>
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '40px' }}>
+      <div className={`refrens-main ${isSidebarPinned ? 'shifted' : ''}`}>
         <Outlet />
       </div>
+
+      {/* Floating Action Button */}
+      <button className="fab-chat">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2-2z"></path>
+        </svg>
+      </button>
     </div>
   );
 }

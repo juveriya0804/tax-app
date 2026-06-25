@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAuthToken, fetchApi } from '../services/api';
-import VendorModal from '../components/VendorModal';
-import { Edit2, Trash2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Download, Search, Columns, Filter, Plus, ArrowUpDown } from 'lucide-react';
 
 export default function VendorsSuppliers() {
   const navigate = useNavigate();
   const [vendors, setVendors] = useState<any[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,93 +19,220 @@ export default function VendorsSuppliers() {
   const loadVendors = async () => {
     try {
       const res = await fetchApi('/vendors');
-      setVendors(res || []);
+      const apiVendors = res || [];
+      const localVendors = JSON.parse(localStorage.getItem('vendorsSuppliersExt') || '[]');
+      setVendors([...localVendors, ...apiVendors]);
     } catch (err) {
       console.error(err);
+      const localVendors = JSON.parse(localStorage.getItem('vendorsSuppliersExt') || '[]');
+      setVendors(localVendors);
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
-    setSelectedVendor(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEdit = (vendor: any) => {
-    setSelectedVendor(vendor);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this vendor?')) return;
-    try {
-      await fetchApi(`/vendors/${id}`, { method: 'DELETE' });
-      loadVendors();
-    } catch (err) {
-      console.error(err);
-      alert('Failed to delete vendor');
-    }
+    navigate('/vendors-suppliers/create');
   };
 
   return (
-    <div style={{ padding: '20px 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-        <div>
-          <h1 className="text-gradient">Vendors & Suppliers</h1>
-          <p className="text-muted" style={{ marginTop: '8px' }}>Manage your vendors and suppliers.</p>
-        </div>
-        <button onClick={handleAdd} className="btn-primary" style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent-primary)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
-          Add Vendor
-        </button>
+    <div style={{ padding: '0 0 20px 0' }}>
+      {/* Breadcrumbs */}
+      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+        Nafter Web Technologies &gt; <span style={{ color: 'var(--text-primary)' }}>Manage Vendors</span> &gt;
       </div>
 
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 500, color: '#1f2937', margin: 0 }}>Manage Vendors</h1>
+        
+        <div style={{ display: 'flex' }}>
+          <button 
+            onClick={handleAdd}
+            style={{ 
+              background: '#e11d48', 
+              color: 'white', 
+              border: 'none', 
+              padding: '10px 20px', 
+              borderRadius: '6px 0 0 6px', 
+              fontWeight: 500, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            <Plus size={16} /> Add Vendor
+          </button>
+          <button 
+            style={{ 
+              background: '#be123c', 
+              color: 'white', 
+              border: 'none', 
+              padding: '10px 12px', 
+              borderRadius: '0 6px 6px 0', 
+              display: 'flex', 
+              alignItems: 'center', 
+              cursor: 'pointer'
+            }}
+          >
+            <ChevronDown size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Main Tabs */}
+      <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid rgba(0,0,0,0.1)', marginBottom: '24px' }}>
+        <div style={{ paddingBottom: '12px', borderBottom: '2px solid #6366f1', color: '#6366f1', fontWeight: 500, cursor: 'pointer' }}>
+          All Vendors
+        </div>
+        <div style={{ paddingBottom: '12px', color: 'var(--text-secondary)', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          Reports and More <ChevronRight size={16} />
+        </div>
+      </div>
+
+      {/* Sub Tabs */}
+      <div style={{ display: 'flex', gap: '24px', marginBottom: '24px' }}>
+        <div style={{ color: 'var(--text-primary)', fontWeight: 500, cursor: 'pointer' }}>
+          Active Vendors
+        </div>
+        <div style={{ color: 'var(--text-secondary)', fontWeight: 500, cursor: 'pointer' }}>
+          Archived Vendors
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginBottom: '24px' }}>
+        <button style={{ 
+          background: 'transparent', 
+          border: '1px solid rgba(0,0,0,0.1)', 
+          color: 'var(--text-primary)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '8px', 
+          padding: '8px 16px',
+          borderRadius: '6px',
+          cursor: 'pointer'
+        }}>
+          <Download size={16} /> Download CSV
+        </button>
+
+        <div style={{ position: 'relative' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-secondary)' }} />
+          <input 
+            type="text" 
+            placeholder="Search Vendors" 
+            style={{ 
+              padding: '8px 12px 8px 36px', 
+              borderRadius: '6px', 
+              border: '1px solid rgba(0,0,0,0.1)', 
+              outline: 'none',
+              width: '200px'
+            }} 
+          />
+        </div>
+      </div>
+
+      {/* Table Area */}
       <div className="glass-panel" style={{ padding: '24px' }}>
-        {loading ? (
-          <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading vendors...</div>
-        ) : vendors.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-            No vendors found. Click "Add Vendor" to get started.
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ color: 'var(--text-secondary)' }}>
+            {vendors.length === 0 ? 'No Vendor Found' : `${vendors.length} Vendor(s) Found`}
           </div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <button style={{ 
+            background: 'transparent', 
+            border: '1px solid rgba(0,0,0,0.1)', 
+            color: 'var(--text-primary)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            padding: '6px 12px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '0.9rem'
+          }}>
+            <Columns size={16} color="#8b5cf6" /> Show/Hide Columns
+          </button>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '1000px' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
-                <th style={{ padding: '12px 16px', fontWeight: 600 }}>Name</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600 }}>Company</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600 }}>Email</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600 }}>Phone</th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+              <tr style={{ background: '#f8fafc', borderTop: '1px solid rgba(0,0,0,0.05)', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                <th style={{ padding: '16px', width: '40px' }}>
+                  <input type="checkbox" style={{ borderRadius: '4px', border: '1px solid rgba(0,0,0,0.2)' }} disabled />
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>Logo</th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Name <Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Industry <Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Phone <Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Email <Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Country <Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Status <Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
+                <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>Last Communication Date <ArrowUpDown size={12} style={{ opacity: 0.5 }} /><Filter size={12} style={{ opacity: 0.5 }} /></div>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {vendors.map((vendor) => (
-                <tr key={vendor.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '16px', fontWeight: 500, color: '#0f172a' }}>{vendor.name}</td>
-                  <td style={{ padding: '16px', color: '#475569' }}>{vendor.company || '-'}</td>
-                  <td style={{ padding: '16px', color: '#475569' }}>{vendor.email || '-'}</td>
-                  <td style={{ padding: '16px', color: '#475569' }}>{vendor.phone || '-'}</td>
-                  <td style={{ padding: '16px', textAlign: 'right' }}>
-                    <button onClick={() => handleEdit(vendor)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#3b82f6', marginRight: '12px' }}>
-                      <Edit2 size={18} />
-                    </button>
-                    <button onClick={() => handleDelete(vendor.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}>
-                      <Trash2 size={18} />
-                    </button>
+              {vendors.length === 0 ? (
+                <tr>
+                  <td colSpan={9} style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    No vendors found. Click "+ Add Vendor" to add one manually.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                vendors.map((vendor) => (
+                  <tr 
+                    key={vendor.id} 
+                    className="table-row-hover"
+                    onClick={(e) => {
+                      if ((e.target as HTMLElement).tagName !== 'INPUT') {
+                        navigate(`/vendors-suppliers/${vendor.id}`);
+                      }
+                    }}
+                    style={{ borderBottom: '1px solid rgba(0,0,0,0.05)', cursor: 'pointer' }}
+                  >
+                    <td style={{ padding: '16px' }}>
+                      <input type="checkbox" style={{ borderRadius: '4px', border: '1px solid rgba(0,0,0,0.2)' }} />
+                    </td>
+                    <td style={{ padding: '16px' }}>
+                      <div style={{ width: '32px', height: '32px', background: '#f1f5f9', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '12px' }}>
+                        Logo
+                      </div>
+                    </td>
+                    <td style={{ padding: '16px', fontWeight: 500, color: 'var(--text-primary)' }}>{vendor.name || vendor.businessName}</td>
+                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{vendor.industry || '-'}</td>
+                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{vendor.phone || '-'}</td>
+                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{vendor.email || '-'}</td>
+                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{vendor.country || '-'}</td>
+                    <td style={{ padding: '16px' }}>
+                      <span style={{ padding: '4px 8px', borderRadius: '4px', background: '#dcfce7', color: '#166534', fontSize: '0.85rem', fontWeight: 500 }}>
+                        Active
+                      </span>
+                    </td>
+                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>
+                      -
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
-        )}
+        </div>
       </div>
-
-      <VendorModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSaved={loadVendors}
-        vendor={selectedVendor}
-      />
     </div>
   );
 }

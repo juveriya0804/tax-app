@@ -6,6 +6,10 @@ const router = Router();
 
 router.use(authMiddleware);
 
+router.get('/vendor-leads', vendorsController.getVendorLeads);
+router.post('/vendor-leads', vendorsController.createVendorLead);
+router.put('/vendor-leads/:id', vendorsController.updateVendorLead);
+
 router.get('/', vendorsController.getVendors);
 router.post('/', vendorsController.createVendor);
 router.get('/:id', vendorsController.getVendorById);

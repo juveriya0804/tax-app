@@ -18,7 +18,11 @@ export default function PayoutReceipts() {
           <h1 className="text-gradient">Payout Receipts</h1>
           <p className="text-muted" style={{ marginTop: '8px' }}>Manage your payout receipts to vendors.</p>
         </div>
-        <button className="btn-primary" style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent-primary)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
+        <button 
+          onClick={() => navigate('/payout-receipts/create')}
+          className="btn-primary" 
+          style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent-primary)', color: 'white', fontWeight: 600, cursor: 'pointer' }}
+        >
           Create Receipt
         </button>
       </div>

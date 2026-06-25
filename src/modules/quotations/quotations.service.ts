@@ -1,9 +1,20 @@
 import { prisma } from '../../lib/prisma';
 
 export const createQuotation = async (organizationId: string, data: any) => {
+  const amount = data.items?.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0) || 0;
+  const vatAmount = 0;
+  const totalAmount = amount + vatAmount;
+  const quotationNumber = `QT-${Date.now()}`;
+
   return prisma.quotation.create({
     data: {
-      ...data,
+      customerId: data.customerId || undefined,
+      issueDate: data.issueDate,
+      validUntil: data.validUntil,
+      amount,
+      vatAmount,
+      totalAmount,
+      quotationNumber,
       organizationId,
       items: {
         create: data.items,

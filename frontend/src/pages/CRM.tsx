@@ -1,153 +1,103 @@
-import { useEffect, useState } from 'react';
-import { fetchApi } from '../services/api';
-import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown, MoreHorizontal } from 'lucide-react';
 
 export default function CRM() {
-  const [leads, setLeads] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
-
-  useEffect(() => { loadLeads(); }, []);
-
-  const loadLeads = async () => {
-    try {
-      setLoading(true);
-      const res = await fetchApi('/crm/leads');
-      setLeads(res.data || []);
-    } catch (err) {
-      toast.error('Failed to load leads');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await fetchApi('/crm/leads', {
-        method: 'POST',
-        body: JSON.stringify(formData)
-      });
-      toast.success('Lead added successfully');
-      setFormData({ name: '', email: '', phone: '' });
-      loadLeads();
-    } catch (err) {
-      toast.error('Failed to add lead');
-    }
-  };
-
-  const updateStatus = async (leadId: string, status: string) => {
-    try {
-      await fetchApi(`/crm/leads/${leadId}/status`, {
-        method: 'PUT',
-        body: JSON.stringify({ status })
-      });
-      toast.success('Status updated');
-      loadLeads();
-    } catch (err) {
-      toast.error('Failed to update status');
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1 className="text-gradient" style={{ marginBottom: '24px' }}>Sales CRM & Leads</h1>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '60px' }}>
+      
+      {/* Header section */}
+      <div style={{ background: 'white', borderBottom: '1px solid #e2e8f0', padding: '24px 32px 0 32px' }}>
+        
+        <div style={{ display: 'flex', alignItems: 'center', color: '#64748b', fontSize: '0.9rem', marginBottom: '16px' }}>
+          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>Dashboard</span>
+          <span style={{ margin: '0 8px' }}>&gt;</span>
+          <span style={{ color: '#94a3b8' }}>Lead Management</span>
+        </div>
 
-      <div className="glass-panel" style={{ marginBottom: '32px' }}>
-        <h3 style={{ marginBottom: '16px' }}>Add New Lead</h3>
-        <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
-          <div className="form-group" style={{ margin: 0, flex: 1 }}>
-            <label className="form-label">Name</label>
-            <input 
-              type="text" 
-              className="form-input" 
-              value={formData.name} 
-              onChange={e => setFormData({...formData, name: e.target.value})} 
-              required 
-            />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 600, color: '#334155', margin: 0 }}>Lead Management</h1>
+            <span style={{ fontSize: '1.5rem' }}>💡</span>
           </div>
-          <div className="form-group" style={{ margin: 0, flex: 1 }}>
-            <label className="form-label">Email</label>
-            <input 
-              type="email" 
-              className="form-input" 
-              value={formData.email} 
-              onChange={e => setFormData({...formData, email: e.target.value})} 
-            />
+          
+          <div style={{ display: 'flex', alignItems: 'stretch' }}>
+            <button onClick={() => navigate('/leads/create')} style={{ background: '#e11d48', color: 'white', border: '2px solid #0f172a', padding: '10px 20px', borderRadius: '6px 0 0 6px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, cursor: 'pointer', fontSize: '1rem', zIndex: 10, position: 'relative' }}>
+              <span style={{ fontSize: '1.4rem', lineHeight: 1, fontWeight: 300 }}>+</span> Add New
+            </button>
+            <button style={{ background: '#be123c', color: 'white', border: 'none', padding: '0 12px', borderRadius: '0 6px 6px 0', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <ChevronDown size={18} />
+            </button>
           </div>
-          <div className="form-group" style={{ margin: 0, flex: 1 }}>
-            <label className="form-label">Phone</label>
-            <input 
-              type="text" 
-              className="form-input" 
-              value={formData.phone} 
-              onChange={e => setFormData({...formData, phone: e.target.value})} 
-            />
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '32px', borderBottom: '2px solid transparent' }}>
+          <div style={{ color: '#8b5cf6', fontWeight: 600, paddingBottom: '12px', borderBottom: '2px solid #8b5cf6', cursor: 'pointer', fontSize: '1.05rem' }}>
+            All Sales Pipelines
           </div>
-          <button type="submit" className="btn-primary" style={{ padding: '14px 24px' }}>Add Lead</button>
-        </form>
+          <div style={{ color: '#475569', fontWeight: 500, paddingBottom: '12px', cursor: 'pointer', fontSize: '1.05rem', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#1e293b'} onMouseOut={e => e.currentTarget.style.color = '#475569'}>
+            Forms
+          </div>
+          <div style={{ color: '#475569', fontWeight: 500, paddingBottom: '12px', cursor: 'pointer', fontSize: '1.05rem', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#1e293b'} onMouseOut={e => e.currentTarget.style.color = '#475569'}>
+            All Leads
+          </div>
+          <div style={{ color: '#475569', fontWeight: 500, paddingBottom: '12px', cursor: 'pointer', fontSize: '1.05rem', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#1e293b'} onMouseOut={e => e.currentTarget.style.color = '#475569'}>
+            All Meetings
+          </div>
+          <div style={{ color: '#64748b', fontWeight: 500, paddingBottom: '12px', cursor: 'pointer', fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '4px', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#1e293b'} onMouseOut={e => e.currentTarget.style.color = '#64748b'}>
+            Reports & More <span style={{ fontSize: '0.9rem' }}>&gt;</span>
+          </div>
+        </div>
       </div>
 
-      <div className="glass-panel">
-        <h3 style={{ marginBottom: '16px' }}>Current Leads</h3>
-        {loading ? <p>Loading...</p> : (
-          <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.1)' }}>
-                <th style={{ padding: '12px' }}>Date</th>
-                <th style={{ padding: '12px' }}>Name</th>
-                <th style={{ padding: '12px' }}>Contact Info</th>
-                <th style={{ padding: '12px' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leads.map(lead => (
-                <tr key={lead.id} style={{ borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                  <td style={{ padding: '12px' }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px', fontWeight: 600 }}>{lead.name}</td>
-                  <td style={{ padding: '12px' }}>
-                    <div style={{ fontSize: '0.9rem' }}>{lead.email}</div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{lead.phone}</div>
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    <select
-                      value={lead.status}
-                      onChange={(e) => updateStatus(lead.id, e.target.value)}
-                      style={{
-                        padding: '6px 12px',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(0,0,0,0.1)',
-                        background: lead.status === 'NEW' ? 'rgba(37, 99, 235, 0.1)' : 
-                                    lead.status === 'CONTACTED' ? 'rgba(245, 158, 11, 0.1)' : 
-                                    lead.status === 'QUALIFIED' ? 'rgba(16, 185, 129, 0.1)' : 
-                                    'rgba(239, 68, 68, 0.1)',
-                        color: lead.status === 'NEW' ? 'var(--accent-primary)' : 
-                               lead.status === 'CONTACTED' ? 'var(--warning)' : 
-                               lead.status === 'QUALIFIED' ? 'var(--success)' : 
-                               'var(--danger)',
-                        fontWeight: 600,
-                        outline: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="NEW">New</option>
-                      <option value="CONTACTED">Contacted</option>
-                      <option value="QUALIFIED">Qualified</option>
-                      <option value="LOST">Lost</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-              {leads.length === 0 && (
-                <tr>
-                  <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                    No leads found. Add one above!
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+      {/* Main Content */}
+      <div style={{ padding: '32px' }}>
+        
+        {/* Sales Pipeline Card */}
+        <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#334155', margin: 0 }}>Sales Pipeline</h2>
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button style={{ background: 'white', border: '1px solid #e2e8f0', color: '#475569', padding: '8px 16px', borderRadius: '6px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'}} onMouseOut={e => {e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e2e8f0'}}>
+                View Leads
+              </button>
+              <button style={{ background: 'white', border: '1px solid #e2e8f0', color: '#475569', padding: '8px 16px', borderRadius: '6px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'}} onMouseOut={e => {e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e2e8f0'}}>
+                Edit Pipeline
+              </button>
+              <button style={{ background: 'white', border: '1px solid #e2e8f0', color: '#475569', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }} onMouseOver={e => {e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'}} onMouseOut={e => {e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e2e8f0'}}>
+                <MoreHorizontal size={18} />
+              </button>
+            </div>
+          </div>
+
+          <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0 0 32px 0', maxWidth: '600px', lineHeight: '1.6' }}>
+            This is a sample description of your Sales Pipeline - A way to track your potential leads as they progress through different statuses.
+          </p>
+
+          <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '24px', display: 'flex', gap: '48px', flexWrap: 'wrap' }}>
+            
+            {[
+              { label: 'Contacted', count: '42' },
+              { label: 'No response', count: '0' },
+              { label: 'Connected', count: '0' },
+              { label: 'Warm', count: '0' },
+              { label: 'Deal Done', count: '0' },
+              { label: 'Lost', count: '0' },
+              { label: 'Not Serviceable', count: '0' },
+            ].map((status, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>{status.label}</span>
+                <span style={{ color: '#334155', fontSize: '1.15rem', fontWeight: 700 }}>{status.count}</span>
+              </div>
+            ))}
+
+          </div>
+        </div>
+
       </div>
     </div>
   );

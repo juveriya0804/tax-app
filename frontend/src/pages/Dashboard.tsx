@@ -1,114 +1,119 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchApi, getAuthToken, removeAuthToken } from '../services/api';
+import { getAuthToken } from '../services/api';
+import { Plus, ChevronDown } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [customers, setCustomers] = useState<any[]>([]);
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
     if (!getAuthToken()) {
       navigate('/login');
-      return;
     }
-    loadData();
   }, [navigate]);
 
-  const loadData = async () => {
-    try {
-      const [custRes, invRes, statsRes] = await Promise.all([
-        fetchApi('/billing/customers'),
-        fetchApi('/billing/invoices'),
-        fetchApi('/reports/dashboard-stats')
-      ]);
-      setCustomers(custRes.data);
-      setInvoices(invRes.data);
-      setStats(statsRes.data);
-    } catch (error) {
-      console.error(error);
-      if ((error as Error).message === 'Unauthorized: Token is invalid or expired') {
-        removeAuthToken();
-        navigate('/login');
-      }
-    }
-  };
-
-  const handleLogout = () => {
-    removeAuthToken();
-    navigate('/login');
-  };
-
-  const sendReminder = async (invoiceId: string) => {
-    try {
-      await fetchApi('/whatsapp/send-reminder', {
-        method: 'POST',
-        body: JSON.stringify({ invoiceId })
-      });
-      alert('Reminder sent to queue!');
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
-
   return (
-    <div style={{ padding: '20px 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-        <div>
-          <h1 className="text-gradient">Overview</h1>
-          <p className="text-muted" style={{ marginTop: '8px' }}>Your business at a glance.</p>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingTop: '24px' }}>
+      {/* Header Area */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '48px' 
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <img 
+            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Imran" 
+            alt="Profile" 
+            style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#e5e7eb' }}
+          />
+          <div>
+            <div style={{ color: '#6b7280', fontSize: '1.1rem', marginBottom: '4px' }}>Hello admin</div>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+              Welcome back to Taxflow Admin!
+            </h1>
+          </div>
         </div>
+        
+        <button 
+          onClick={() => navigate('/quotations/create')}
+          style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: '#e11d48',
+          border: 'none',
+          padding: '10px 16px',
+          borderRadius: '8px',
+          fontWeight: '600',
+          color: 'white',
+          cursor: 'pointer',
+          boxShadow: '0 4px 14px 0 rgba(225, 29, 72, 0.39)',
+          fontSize: '0.95rem'
+        }}>
+          <Plus size={18} />
+          Create Quotation
+          <ChevronDown size={18} style={{ marginLeft: '4px' }} />
+        </button>
       </div>
 
-      {stats && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <div className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px' }}>Total Revenue</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 600, color: 'var(--success)' }}>₹{stats.totalRevenue.toFixed(2)}</div>
-          </div>
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <div className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px' }}>Outstanding</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 600, color: 'var(--warning)' }}>₹{stats.totalOutstanding.toFixed(2)}</div>
-          </div>
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <div className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px' }}>VAT Collected</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 600, color: 'var(--accent-primary)' }}>₹{stats.totalVatCollected.toFixed(2)}</div>
-          </div>
-          <div className="glass-panel" style={{ padding: '20px' }}>
-            <div className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px' }}>Total Customers</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>{stats.customersCount}</div>
-          </div>
-        </div>
-      )}
+      {/* Getting Started Section */}
+      <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#374151', marginBottom: '24px' }}>
+        Getting Started
+      </h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-        {/* Invoices Panel */}
-        <div className="glass-panel" style={{ padding: '30px' }}>
-          <h3 style={{ marginBottom: '24px', fontWeight: 500 }}>Recent Invoices</h3>
-          {invoices.length === 0 ? (
-            <p className="text-muted">No invoices found.</p>
-          ) : (
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {invoices.map(i => (
-                <li key={i.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--border-glass)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontWeight: 500 }}>INV #{i.invoiceNumber}</div>
-                      <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-                        Amount: ₹{i.totalAmount} | Status: <span style={{ color: i.status === 'PAID' ? 'var(--success)' : 'var(--warning)' }}>{i.status}</span>
-                      </div>
-                    </div>
-                    {i.status === 'UNPAID' && (
-                      <button className="btn-primary" style={{ fontSize: '0.8rem', padding: '6px 12px' }} onClick={() => sendReminder(i.id)}>
-                        Remind
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+        gap: '24px' 
+      }}>
+        {/* Invoice Card */}
+        <div className="refrens-card">
+          <div className="refrens-card-title">Your Last Invoice</div>
+          
+          <div className="refrens-card-label">Invoice No.</div>
+          <div className="refrens-card-value">May-25-15</div>
+          
+          <div className="refrens-card-label">Billed To</div>
+          <div className="refrens-card-value">Vision Fab Private Limited</div>
+          
+          <div className="refrens-card-label">Amount</div>
+          <div className="refrens-card-value">₹1,77,000</div>
+          
+          <div className="refrens-card-label">Invoice Date</div>
+          <div className="refrens-card-value" style={{ marginBottom: 0 }}>08 Jun 2026</div>
+        </div>
+
+        {/* Quotation Card */}
+        <div className="refrens-card">
+          <div className="refrens-card-title">Your Last Quotation</div>
+          
+          <div className="refrens-card-label">Quotation No.</div>
+          <div className="refrens-card-value">NA223</div>
+          
+          <div className="refrens-card-label">Quotation For</div>
+          <div className="refrens-card-value">Vision Fab Private Limited</div>
+          
+          <div className="refrens-card-label">Amount</div>
+          <div className="refrens-card-value">₹5,90,000</div>
+          
+          <div className="refrens-card-label">Quotation Date</div>
+          <div className="refrens-card-value" style={{ marginBottom: 0 }}>27 Mar 2026</div>
+        </div>
+
+        {/* Expenses Card */}
+        <div className="refrens-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="refrens-card-title">Expenses</div>
+          <p style={{ color: '#6b7280', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '24px' }}>
+            Stay on top of your expenses. Track and manage your finances with ease and accuracy.
+          </p>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+            <img 
+              src="/expense_receipt.png" 
+              alt="Expense Tracker Preview" 
+              style={{ width: '100%', borderRadius: '8px', objectFit: 'contain' }}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -11,6 +11,8 @@ import crmRoutes from './modules/crm/crm.routes';
 import accountingRoutes from './modules/accounting/accounting.routes';
 import quotationsRoutes from './modules/quotations/quotations.routes';
 import vendorsRoutes from './modules/vendors/vendors.routes';
+import deliveryChallansRoutes from './modules/delivery-challans/delivery-challans.routes';
+import creditNotesRoutes from './modules/credit-notes/credit-notes.routes';
 
 const app = express();
 
@@ -36,6 +38,8 @@ app.use('/api/crm', crmRoutes);
 app.use('/api/accounting', accountingRoutes);
 app.use('/api/quotations', quotationsRoutes);
 app.use('/api/vendors', vendorsRoutes);
+app.use('/api/delivery-challans', deliveryChallansRoutes);
+app.use('/api/credit-notes', creditNotesRoutes);
 
 // Global Error Handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

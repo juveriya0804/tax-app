@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const crm_controller_1 = require("./crm.controller");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
+const router = (0, express_1.Router)();
+const crmController = new crm_controller_1.CrmController();
+router.use(auth_middleware_1.authMiddleware);
+router.get('/leads', crmController.getLeads);
+router.post('/leads', crmController.createLead);
+router.put('/leads/:leadId/status', crmController.updateLeadStatus);
+exports.default = router;

@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import authRoutes from './modules/auth/auth.routes';
 import billingRoutes from './modules/billing/billing.routes';
 import whatsappRoutes from './modules/whatsapp/whatsapp.routes';
@@ -17,6 +18,7 @@ import creditNotesRoutes from './modules/credit-notes/credit-notes.routes';
 const app = express();
 
 // Global Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

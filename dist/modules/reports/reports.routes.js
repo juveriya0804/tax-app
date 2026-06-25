@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const reports_controller_1 = require("./reports.controller");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
+const router = (0, express_1.Router)();
+const controller = new reports_controller_1.ReportsController();
+router.get('/dashboard-stats', auth_middleware_1.authMiddleware, controller.getDashboardStats.bind(controller));
+router.get('/revenue-trends', auth_middleware_1.authMiddleware, controller.getRevenueTrends.bind(controller));
+router.get('/vat-breakdown', auth_middleware_1.authMiddleware, controller.getVatBreakdown.bind(controller));
+router.get('/customer-growth', auth_middleware_1.authMiddleware, controller.getCustomerGrowth.bind(controller));
+exports.default = router;

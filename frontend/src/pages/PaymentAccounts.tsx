@@ -1,13 +1,27 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuthToken } from '../services/api';
+import { getAuthToken, fetchApi } from '../services/api';
+import AccountModal from '../components/AccountModal';
 
 export default function PaymentAccounts() {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+
+  const loadAccounts = async () => {
+    try {
+      const data = await fetchApi('/accounting/accounts');
+      setAccounts(data);
+    } catch (err) {
+      console.error('Failed to load accounts', err);
+    }
+  };
 
   useEffect(() => {
     if (!getAuthToken()) {
       navigate('/login');
+    } else {
+      loadAccounts();
     }
   }, [navigate]);
 
@@ -18,7 +32,10 @@ export default function PaymentAccounts() {
           <h1 className="text-gradient">Payment Accounts</h1>
           <p className="text-muted" style={{ marginTop: '8px' }}>Manage digital wallets and payment gateways.</p>
         </div>
-        <button className="btn-primary" style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent-primary)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
+        <button 
+          className="btn-primary" 
+          onClick={() => setIsModalOpen(true)}
+          style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'var(--accent-primary)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
           Add Account
         </button>
       </div>
@@ -55,6 +72,13 @@ export default function PaymentAccounts() {
         <span style={{ fontSize: '1.2rem' }}>▶️</span>
         <span style={{ fontSize: '1.2rem', color: '#0f172a' }}></span>
       </div>
+
+      <AccountModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSaved={loadAccounts} 
+        accounts={accounts} 
+      />
     </div>
   );
 }

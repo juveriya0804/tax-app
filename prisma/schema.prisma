@@ -13,6 +13,7 @@ model Organization {
   trn          String       @unique @db.VarChar(15)
   jurisdiction Jurisdiction
   vatPercentage Decimal      @default(5.0)
+  logoUrl      String?
   createdAt    DateTime     @default(now())
   users        User[]
   customers    Customer[]

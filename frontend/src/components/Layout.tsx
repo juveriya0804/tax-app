@@ -150,6 +150,19 @@ export default function Layout() {
     { path: '/growth', label: 'Growth Suite', icon: Rocket },
   ];
 
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  // Close menus when clicking outside (simple implementation by closing others when one opens)
+  const toggleNotifications = () => {
+    setIsNotificationsOpen(!isNotificationsOpen);
+    if (!isNotificationsOpen) setIsProfileMenuOpen(false);
+  };
+
+  const toggleProfile = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+    if (!isProfileMenuOpen) setIsNotificationsOpen(false);
+  };
+
   return (
     <div>
       {/* Top Navigation */}
@@ -185,23 +198,77 @@ export default function Layout() {
           </Link>
         </div>
         <div className="nav-right">
-          <button className="nav-icon-btn" style={{ position: 'relative' }}>
-            <Bell size={20} />
-            <span style={{
-              position: 'absolute',
-              top: '0px',
-              right: '2px',
-              background: '#ef4444',
-              color: 'white',
-              fontSize: '0.6rem',
-              width: '14px',
-              height: '14px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>2</span>
-          </button>
+          <div style={{ position: 'relative' }}>
+            <button className="nav-icon-btn" style={{ position: 'relative' }} onClick={toggleNotifications}>
+              <Bell size={20} />
+              <span style={{
+                position: 'absolute',
+                top: '0px',
+                right: '2px',
+                background: '#ef4444',
+                color: 'white',
+                fontSize: '0.6rem',
+                width: '14px',
+                height: '14px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>2</span>
+            </button>
+            
+            {isNotificationsOpen && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: '0',
+                marginTop: '12px',
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: '16px',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05)',
+                width: '320px',
+                overflow: 'hidden',
+                zIndex: 100,
+                display: 'flex',
+                flexDirection: 'column',
+                animation: 'fadeIn 0.2s ease-out'
+              }}>
+                <div style={{ padding: '16px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 600 }}>Notifications</h3>
+                  <span style={{ fontSize: '0.8rem', color: '#6366f1', cursor: 'pointer', fontWeight: 500 }}>Mark all as read</span>
+                </div>
+                
+                <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                  <div style={{ padding: '16px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', gap: '12px', cursor: 'pointer', background: 'rgba(99, 102, 241, 0.05)' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1', marginTop: '6px', flexShrink: 0 }}></div>
+                    <div>
+                      <p style={{ margin: '0 0 4px 0', fontSize: '0.9rem', color: '#334155', fontWeight: 500 }}>Your invoice #INV-102 was paid</p>
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>2 hours ago</span>
+                    </div>
+                  </div>
+                  <div style={{ padding: '16px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', gap: '12px', cursor: 'pointer', background: 'rgba(99, 102, 241, 0.05)' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#6366f1', marginTop: '6px', flexShrink: 0 }}></div>
+                    <div>
+                      <p style={{ margin: '0 0 4px 0', fontSize: '0.9rem', color: '#334155', fontWeight: 500 }}>New vendor lead assigned to you</p>
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>5 hours ago</span>
+                    </div>
+                  </div>
+                  <div style={{ padding: '16px', display: 'flex', gap: '12px', cursor: 'pointer' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'transparent', marginTop: '6px', flexShrink: 0 }}></div>
+                    <div>
+                      <p style={{ margin: '0 0 4px 0', fontSize: '0.9rem', color: '#64748b' }}>Profile updated successfully</p>
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>1 day ago</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ padding: '12px', background: '#f8fafc', textAlign: 'center', borderTop: '1px solid rgba(0,0,0,0.05)', fontSize: '0.85rem', color: '#6366f1', cursor: 'pointer', fontWeight: 500 }}>
+                  View all notifications
+                </div>
+              </div>
+            )}
+          </div>
           <div style={{ position: 'relative' }}>
             <button 
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}

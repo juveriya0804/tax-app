@@ -11,12 +11,13 @@ export class OrganizationService {
         trn: true,
         jurisdiction: true,
         vatPercentage: true,
+        logoUrl: true,
         createdAt: true,
       }
     });
   }
 
-  async updateOrganization(organizationId: string, data: { companyName?: string, trn?: string, jurisdiction?: Jurisdiction, vatPercentage?: number }) {
+  async updateOrganization(organizationId: string, data: { companyName?: string, trn?: string, jurisdiction?: Jurisdiction, vatPercentage?: number, logoUrl?: string }) {
     return prisma.organization.update({
       where: { id: organizationId },
       data,

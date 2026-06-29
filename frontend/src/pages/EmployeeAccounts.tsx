@@ -1,8 +1,30 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Download } from 'lucide-react';
+import AccountModal from '../components/AccountModal';
+import { getAuthToken, fetchApi } from '../services/api';
 
 export default function EmployeeAccounts() {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+
+  const loadAccounts = async () => {
+    try {
+      const data = await fetchApi('/accounting/accounts');
+      setAccounts(data);
+    } catch (err) {
+      console.error('Failed to load accounts', err);
+    }
+  };
+
+  useEffect(() => {
+    if (!getAuthToken()) {
+      navigate('/login');
+    } else {
+      loadAccounts();
+    }
+  }, [navigate]);
 
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '60px', fontFamily: 'Inter, sans-serif' }}>
@@ -26,7 +48,9 @@ export default function EmployeeAccounts() {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'stretch' }}>
-            <button style={{ background: '#e11d48', color: 'white', border: '1px solid #be123c', borderRight: 'none', padding: '10px 20px', borderRadius: '6px 0 0 6px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, cursor: 'pointer', fontSize: '1rem', zIndex: 10, position: 'relative' }}>
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              style={{ background: '#e11d48', color: 'white', border: '1px solid #be123c', borderRight: 'none', padding: '10px 20px', borderRadius: '6px 0 0 6px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500, cursor: 'pointer', fontSize: '1rem', zIndex: 10, position: 'relative' }}>
               <span style={{ fontSize: '1.4rem', lineHeight: 1, fontWeight: 300 }}>+</span> New Payments Account
             </button>
             <button style={{ background: '#be123c', color: 'white', border: '1px solid #9f1239', borderLeft: '1px solid #f43f5e', padding: '0 12px', borderRadius: '0 6px 6px 0', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
@@ -146,6 +170,13 @@ export default function EmployeeAccounts() {
         </div>
 
       </div>
+
+      <AccountModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSaved={loadAccounts} 
+        accounts={accounts} 
+      />
     </div>
   );
 }

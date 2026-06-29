@@ -1,6 +1,6 @@
 [build]
   publish = "frontend/dist"
-  command = "npm install && npx prisma generate && cd frontend && npm install && npm run build"
+  command = "npm install && npx prisma db push --accept-data-loss && npx prisma generate && npx ts-node seed.ts && cd frontend && npm install && npm run build"
   functions = "netlify/functions"
 
 [[redirects]]

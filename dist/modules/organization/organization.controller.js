@@ -21,12 +21,13 @@ class OrganizationController {
         this.updateProfile = async (req, res, next) => {
             try {
                 const organizationId = req.user.organizationId;
-                const { companyName, trn, jurisdiction, vatPercentage } = req.body;
+                const { companyName, trn, jurisdiction, vatPercentage, logoUrl } = req.body;
                 const updated = await this.organizationService.updateOrganization(organizationId, {
                     companyName,
                     trn,
                     jurisdiction,
                     vatPercentage: vatPercentage !== undefined ? Number(vatPercentage) : undefined,
+                    logoUrl,
                 });
                 res.status(200).json({ data: updated, message: 'Organization profile updated successfully' });
             }

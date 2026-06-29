@@ -28,20 +28,25 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/billing', billingRoutes);
-app.use('/api/whatsapp', whatsappRoutes);
-app.use('/api/reports', reportsRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/pos', posRoutes);
-app.use('/api/organization', organizationRoutes);
-app.use('/api/expenses', expensesRoutes);
-app.use('/api/crm', crmRoutes);
-app.use('/api/accounting', accountingRoutes);
-app.use('/api/quotations', quotationsRoutes);
-app.use('/api/vendors', vendorsRoutes);
-app.use('/api/delivery-challans', deliveryChallansRoutes);
-app.use('/api/credit-notes', creditNotesRoutes);
+const apiRouter = express.Router();
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/billing', billingRoutes);
+apiRouter.use('/whatsapp', whatsappRoutes);
+apiRouter.use('/reports', reportsRoutes);
+apiRouter.use('/inventory', inventoryRoutes);
+apiRouter.use('/pos', posRoutes);
+apiRouter.use('/organization', organizationRoutes);
+apiRouter.use('/expenses', expensesRoutes);
+apiRouter.use('/crm', crmRoutes);
+apiRouter.use('/accounting', accountingRoutes);
+apiRouter.use('/quotations', quotationsRoutes);
+apiRouter.use('/vendors', vendorsRoutes);
+apiRouter.use('/delivery-challans', deliveryChallansRoutes);
+apiRouter.use('/credit-notes', creditNotesRoutes);
+
+app.use('/api', apiRouter);
+// Mount on / as well to handle Netlify Serverless environment path stripping
+app.use('/', apiRouter);
 
 // Global Error Handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

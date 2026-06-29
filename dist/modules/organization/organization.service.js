@@ -12,6 +12,7 @@ class OrganizationService {
                 trn: true,
                 jurisdiction: true,
                 vatPercentage: true,
+                logoUrl: true,
                 createdAt: true,
             }
         });

@@ -345,12 +345,12 @@ export default function Layout() {
           <div style={{
             width: '40px',
             height: '40px',
-            border: '2px solid var(--accent-main)',
+            border: '2px solid var(--text-primary)',
             borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--accent-main)',
+            color: 'var(--text-primary)',
             fontWeight: 'bold',
             fontSize: '1.2rem'
           }}>

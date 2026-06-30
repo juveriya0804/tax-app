@@ -172,11 +172,11 @@ export default function Layout() {
             <Menu size={24} />
           </button>
           <div className="nav-brand">
-            <Triangle size={24} fill="white" />
+            <Triangle size={24} fill="currentColor" />
             Refrens
           </div>
           <Link to="/user-profile/edit" style={{
-            background: 'rgba(255, 255, 255, 0.15)',
+            background: 'rgba(0, 0, 0, 0.05)',
             padding: '4px 12px',
             borderRadius: '100px',
             display: 'flex',
@@ -184,7 +184,7 @@ export default function Layout() {
             gap: '8px',
             fontSize: '0.85rem',
             marginLeft: '16px',
-            color: 'white',
+            color: 'var(--text-primary)',
             textDecoration: 'none',
             cursor: 'pointer'
           }}>

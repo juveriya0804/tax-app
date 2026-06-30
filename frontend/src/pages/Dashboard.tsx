@@ -13,23 +13,18 @@ export default function Dashboard() {
   }, [navigate]);
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', paddingTop: '24px' }}>
+    <div className="max-w-[1200px] mx-auto pt-6">
       {/* Header Area */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '48px' 
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <div className="flex justify-between items-center mb-12">
+        <div className="flex items-center gap-5">
           <img 
             src="https://api.dicebear.com/7.x/avataaars/svg?seed=Imran" 
             alt="Profile" 
-            style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#e5e7eb' }}
+            className="w-20 h-20 rounded-full bg-gray-200"
           />
           <div>
-            <div style={{ color: '#6b7280', fontSize: '1.1rem', marginBottom: '4px' }}>Hello admin</div>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: '600', color: '#111827', margin: 0 }}>
+            <div className="text-gray-500 text-[1.1rem] mb-1">Hello admin</div>
+            <h1 className="text-[1.8rem] font-semibold text-gray-900 m-0">
               Welcome back to Taxflow Admin!
             </h1>
           </div>
@@ -37,36 +32,20 @@ export default function Dashboard() {
         
         <button 
           onClick={() => navigate('/quotations/create')}
-          style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: '#e11d48',
-          border: 'none',
-          padding: '10px 16px',
-          borderRadius: '8px',
-          fontWeight: '600',
-          color: 'white',
-          cursor: 'pointer',
-          boxShadow: '0 4px 14px 0 rgba(225, 29, 72, 0.39)',
-          fontSize: '0.95rem'
-        }}>
+          className="flex items-center gap-2 bg-rose-600 border-none px-4 py-2.5 rounded-lg font-semibold text-white cursor-pointer shadow-[0_4px_14px_0_rgba(225,29,72,0.39)] text-[0.95rem] hover:bg-rose-700 transition-colors"
+        >
           <Plus size={18} />
           Create Quotation
-          <ChevronDown size={18} style={{ marginLeft: '4px' }} />
+          <ChevronDown size={18} className="ml-1" />
         </button>
       </div>
 
       {/* Getting Started Section */}
-      <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#374151', marginBottom: '24px' }}>
+      <h2 className="text-[1.5rem] font-semibold text-gray-700 mb-6">
         Getting Started
       </h2>
 
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-        gap: '24px' 
-      }}>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6">
         {/* Invoice Card */}
         <div className="refrens-card">
           <div className="refrens-card-title">Your Last Invoice</div>
@@ -81,7 +60,7 @@ export default function Dashboard() {
           <div className="refrens-card-value">₹1,77,000</div>
           
           <div className="refrens-card-label">Invoice Date</div>
-          <div className="refrens-card-value" style={{ marginBottom: 0 }}>08 Jun 2026</div>
+          <div className="refrens-card-value mb-0">08 Jun 2026</div>
         </div>
 
         {/* Quotation Card */}
@@ -98,20 +77,20 @@ export default function Dashboard() {
           <div className="refrens-card-value">₹5,90,000</div>
           
           <div className="refrens-card-label">Quotation Date</div>
-          <div className="refrens-card-value" style={{ marginBottom: 0 }}>27 Mar 2026</div>
+          <div className="refrens-card-value mb-0">27 Mar 2026</div>
         </div>
 
         {/* Expenses Card */}
-        <div className="refrens-card" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="refrens-card flex flex-col">
           <div className="refrens-card-title">Expenses</div>
-          <p style={{ color: '#6b7280', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '24px' }}>
+          <p className="text-gray-500 text-[0.95rem] leading-relaxed mb-6">
             Stay on top of your expenses. Track and manage your finances with ease and accuracy.
           </p>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <div className="flex-1 flex items-end justify-center">
             <img 
               src="/expense_receipt.png" 
               alt="Expense Tracker Preview" 
-              style={{ width: '100%', borderRadius: '8px', objectFit: 'contain' }}
+              className="w-full rounded-lg object-contain"
             />
           </div>
         </div>

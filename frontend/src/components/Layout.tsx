@@ -175,46 +175,21 @@ export default function Layout() {
             <Triangle size={24} fill="currentColor" />
             Refrens
           </div>
-          <Link to="/user-profile/edit" style={{
-            background: 'rgba(0, 0, 0, 0.05)',
-            padding: '4px 12px',
-            borderRadius: '100px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '0.85rem',
-            marginLeft: '16px',
-            color: 'var(--text-primary)',
-            textDecoration: 'none',
-            cursor: 'pointer'
-          }}>
+          <Link to="/user-profile/edit" className="bg-black/5 px-3 py-1 rounded-full flex items-center gap-2 text-[0.85rem] ml-4 text-[var(--text-primary)] no-underline cursor-pointer hover:bg-black/10 transition-colors">
             <img 
               src="https://api.dicebear.com/7.x/avataaars/svg?seed=Samir" 
               alt="Profile" 
-              style={{ width: '20px', height: '20px', borderRadius: '50%' }}
+              className="w-5 h-5 rounded-full"
             />
             Meet Samir Lalani
-            <span style={{ opacity: 0.8, fontSize: '0.75rem' }}>Your Onboarding manager</span>
+            <span className="opacity-80 text-[0.75rem]">Your Onboarding manager</span>
           </Link>
         </div>
         <div className="nav-right">
-          <div style={{ position: 'relative' }}>
-            <button className="nav-icon-btn" style={{ position: 'relative' }} onClick={toggleNotifications}>
+          <div className="relative">
+            <button className="nav-icon-btn relative" onClick={toggleNotifications}>
               <Bell size={20} />
-              <span style={{
-                position: 'absolute',
-                top: '0px',
-                right: '2px',
-                background: '#ef4444',
-                color: 'white',
-                fontSize: '0.6rem',
-                width: '14px',
-                height: '14px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>2</span>
+              <span className="absolute top-0 right-[2px] bg-red-500 text-white text-[0.6rem] w-[14px] h-[14px] rounded-full flex items-center justify-center">2</span>
             </button>
             
             {isNotificationsOpen && (
@@ -269,41 +244,20 @@ export default function Layout() {
               </div>
             )}
           </div>
-          <div style={{ position: 'relative' }}>
+          <div className="relative">
             <button 
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              style={{ 
-                background: 'transparent', 
-                border: 'none', 
-                cursor: 'pointer',
-                marginLeft: '8px',
-                display: 'flex',
-                alignItems: 'center'
-              }}
+              className="bg-transparent border-none cursor-pointer ml-2 flex items-center"
             >
               <img 
                 src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" 
                 alt="User" 
-                style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)' }}
+                className="w-8 h-8 rounded-full border-2 border-white/20"
               />
             </button>
             
             {isProfileMenuOpen && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                right: '0',
-                marginTop: '8px',
-                background: 'white',
-                borderRadius: '8px',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-                width: '180px',
-                overflow: 'hidden',
-                zIndex: 100,
-                display: 'flex',
-                flexDirection: 'column',
-                border: '1px solid rgba(0,0,0,0.05)'
-              }}>
+              <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-[0_10px_25px_rgba(0,0,0,0.1)] w-[180px] overflow-hidden z-[100] flex flex-col border border-black/5">
                 <Link 
                   to="/user-profile/view" 
                   onClick={() => setIsProfileMenuOpen(false)}
@@ -341,19 +295,8 @@ export default function Layout() {
 
       {/* Sidebar */}
       <div className={`refrens-sidebar ${isSidebarPinned ? 'pinned' : ''}`}>
-        <Link to="/" style={{ marginBottom: '16px', alignSelf: 'flex-start', marginLeft: '12px' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '2px solid var(--text-primary)',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--text-primary)',
-            fontWeight: 'bold',
-            fontSize: '1.2rem'
-          }}>
+        <Link to="/" className="mb-4 self-start ml-3">
+          <div className="w-10 h-10 border-2 border-[var(--text-primary)] rounded-lg flex items-center justify-center text-[var(--text-primary)] font-bold text-[1.2rem]">
             N
           </div>
         </Link>

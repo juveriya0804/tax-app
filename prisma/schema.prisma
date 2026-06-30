@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 generator client {
@@ -10,7 +10,7 @@ generator client {
 model Organization {
   id           String       @id @default(uuid())
   companyName  String
-  trn          String       @unique @db.VarChar(15)
+  trn          String       @unique
   jurisdiction Jurisdiction
   vatPercentage Decimal      @default(5.0)
   logoUrl      String?

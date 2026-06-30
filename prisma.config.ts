@@ -4,6 +4,6 @@ import 'dotenv/config';
 export default defineConfig({
   earlyAccess: true,
   datasource: {
-    url: env('DATABASE_URL')
+    url: "file:./dev.db"
   }
 });

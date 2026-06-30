@@ -1,6 +1,6 @@
 [build]
   publish = "frontend/dist"
-  command = "npm install && npx prisma generate && cd frontend && npm install && npm run build"
+  command = "npm install && DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy npx prisma generate && cd frontend && npm install && npm run build"
   functions = "netlify/functions"
 
 [[redirects]]
